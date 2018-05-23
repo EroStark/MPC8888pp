@@ -1,0 +1,45 @@
+.pads {
+	border-style: solid;
+	border-radius: 10px;
+    width: 60%;
+    margin: 0 auto;
+	padding: 10px;
+	overflow: auto;
+}
+
+
+.padContainer {
+	width: 60px;
+	background-color: blue;
+	border: 1px solid yellow;
+	float: left;
+	overflow: auto;
+	padding: 5px;
+	margin: 2px;
+}
+
+
+.pad {
+	width: 50px;
+	height: 50px;
+	background-color: #C5C5C5;
+	border: 1px solid black;
+	float: left;
+}
+
+.padHighlighted {
+	background-color: red;
+}
+
+.padAssign{
+	width: 24px;
+	height: 12px;
+	background-color: gray;
+	border: 1px solid black;
+	float: left;
+
+}
+
+.assignHighlighted {
+	background-color: orange;
+}
