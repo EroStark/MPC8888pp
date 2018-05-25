@@ -9,12 +9,11 @@ class Pad extends React.Component {
     this.browserAudioLibrary = new AudioContext();
     
     this.state = {
-      highlighted: false,
       pads: [
-        { id: 0, padHighlighted: false, assignClassList: "padAssign" },
-        { id: 1 , padHighlighted: false, assignClassList: "padAssign" },
-        { id: 2 , padHighlighted: false, assignClassList: "padAssign" },
-        { id: 3 ,padHighlighted: false, assignClassList: "padAssign" }
+        { id: 0, padClassList: 'pad', assignClassList: "padAssign" },
+        { id: 1 , padClassList: 'pad', assignClassList: "padAssign" },
+        { id: 2 , padClassList: 'pad', assignClassList: "padAssign" },
+        { id: 3 ,padClassList: 'pad', assignClassList: "padAssign" }
       ],
       file: false
     };
@@ -35,7 +34,7 @@ class Pad extends React.Component {
     var { pads } = this.state;
     var newPad = [
       ...pads,
-      { id: pads.length , padHighlighted: false, assignClassList: "padAssign" }
+      { id: pads.length , padClassList: 'pad', assignClassList: "padAssign" }
     ];
     this.setState({
       pads: newPad
@@ -50,7 +49,7 @@ class Pad extends React.Component {
   };
 
   filePicked = e => {
-    console.log("file pic", e.target.files[0]);
+    console.log("file picked", e.target.files[0]);
 
     var reader = new FileReader();
     reader.onload = (e) => {
@@ -60,34 +59,49 @@ class Pad extends React.Component {
     reader.readAsArrayBuffer(e.target.files[0]);
   };
 
-  initSound = soundBuffer => {
+  initSound = soundBuffer => { 
     const { pads } = this.state
 
     const audioBuffers = this.loadedFileAudioBuffers
-    console.log(
-      "now we need to process uadio from loaded file",
-      this.browserAudioLibrary
-    );
-    this.browserAudioLibrary.decodeAudioData(
-      soundBuffer,
-      function(buffer) {
-        var assign = pads.filter((s) => s.assignClassList.includes("assignHighlighted"));
-        console.log('here',assign);
-        var whichButton = assign[0].id;
-        console.log('button', whichButton) //substring of button id #
+    var assign = pads.filter((s) => s.assignClassList.includes("assignHighlighted"));
+    // console.log(
+    // "now we need to process uadio from loaded file",
+    // this.browserAudioLibrary
+    // );
+        this.browserAudioLibrary.decodeAudioData(
+            soundBuffer,
+            function(buffer) {
+                var whichButton = assign[0].id;
+                audioBuffers[whichButton] = buffer; //buttons ID becomes place in the loadedSounds
+                console.log("stored file", audioBuffers);
+            },
+            function(e) {
+                console.log("Error decoding file", e);
+            }
+        );
 
-        audioBuffers[whichButton] = buffer;
-        console.log("stored file", audioBuffers);
-        // assign.classList.remove('assignHighlighted');
-        //        playSound();
-      },
-      function(e) {
-        console.log("Error decoding file", e);
-      }
-    );
+        var highlightPad = pads.map((pad, sidx) => {
+            if (assign[0].id == pad.id)
+              return { ...pad, padClassList: "pad padHighlighted" , assignClassList: "padAssign" };
+            return { ...pad, assignClassList: "padAssign" };
+          });
 
-    console.log('after' , this.loadedFileAudioBuffers )
+          this.setState({
+              pads: highlightPad
+          })
   };
+
+  playSound = (e) => {
+ 
+        var whichButton = e.target.id //substring of button id #
+    
+        const player = this.browserAudioLibrary.createBufferSource();
+        player.buffer = this.loadedFileAudioBuffers[whichButton];
+        player.loop = false;
+        player.connect(this.browserAudioLibrary.destination);
+        player.start(); // Play immediately.
+        
+    };
 
   render() {
     var { pads } = this.state;
@@ -96,7 +110,10 @@ class Pad extends React.Component {
       <div className="pads">
         {pads.map((pad, idx) => (
           <div className="padContainer">
-            <div className="pad" id={idx} />
+            <div className={pad.padClassList} 
+            id={idx}
+            onClick= {this.playSound} 
+            />
             <div
               className={pad.assignClassList}
               id={idx}
@@ -114,6 +131,7 @@ class Pad extends React.Component {
           </div>
         ))}
 
+
         <button
           type="button"
           className="formButton"
@@ -124,6 +142,7 @@ class Pad extends React.Component {
 
         <input type="file" className="formButton" onChange={this.filePicked} />
       </div>
+
     );
   }
 }
