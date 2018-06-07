@@ -1,24 +1,21 @@
 import React from "react";
-import "./pads.css";
+import axios from "axios"
+import "./beat.css";
 
 class Pad extends React.Component {
   constructor() {
     super();
-
-    this.loadedFileAudioBuffers = [];
-    this.browserAudioLibrary = new AudioContext();
-    
     this.state = {
       pads: [
         { id: 0, padClassList: 'pad', assignClassList: "padAssign" },
         { id: 1 , padClassList: 'pad', assignClassList: "padAssign" },
         { id: 2 , padClassList: 'pad', assignClassList: "padAssign" },
         { id: 3 ,padClassList: 'pad', assignClassList: "padAssign" }
-      ],
-      file: false
+      ]
     };
   }
 
+  // pad actions
   handleHighlight = e => {
     var { pads } = this.state;
     var highlight = pads.map((pad, sidx) => {
@@ -26,7 +23,6 @@ class Pad extends React.Component {
         return { ...pad, assignClassList: "padAssign assignHighlighted" };
       return { ...pad, assignClassList: "padAssign" };
     });
-    console.log("main", highlight);
     this.setState({ pads: highlight });
   };
 
@@ -47,13 +43,17 @@ class Pad extends React.Component {
       pads: pads.filter((s, sidx) => idx !== sidx)
     });
   };
+  //
 
+  //initalize sound to array
   filePicked = e => {
     console.log("file picked", e.target.files[0]);
 
+    // this.storeInstrument(e.target.files[0])
+
     var reader = new FileReader();
     reader.onload = (e) => {
-      console.log("file finished loading");
+    //   this.storeInstrument(reader.result)
       this.initSound(reader.result);
     };
     reader.readAsArrayBuffer(e.target.files[0]);
@@ -61,19 +61,21 @@ class Pad extends React.Component {
 
   initSound = soundBuffer => { 
     const { pads } = this.state
+    const { browserAudioLibrary, loadedFileAudioBuffers , handleAudioBufferChanges} = this.props
+   
+    const audioBuffers = [...loadedFileAudioBuffers] //****** 
+    const browserAudioApi = browserAudioLibrary
 
-    const audioBuffers = this.loadedFileAudioBuffers
     var assign = pads.filter((s) => s.assignClassList.includes("assignHighlighted"));
     // console.log(
     // "now we need to process uadio from loaded file",
     // this.browserAudioLibrary
     // );
-        this.browserAudioLibrary.decodeAudioData(
+        browserAudioApi.decodeAudioData( //****** 
             soundBuffer,
             function(buffer) {
                 var whichButton = assign[0].id;
-                audioBuffers[whichButton] = buffer; //buttons ID becomes place in the loadedSounds
-                console.log("stored file", audioBuffers);
+                audioBuffers[whichButton] = buffer; 
             },
             function(e) {
                 console.log("Error decoding file", e);
@@ -86,19 +88,22 @@ class Pad extends React.Component {
             return { ...pad, assignClassList: "padAssign" };
           });
 
+          handleAudioBufferChanges(audioBuffers)
           this.setState({
               pads: highlightPad
           })
   };
 
   playSound = (e) => {
- 
+        
+        const {browserAudioLibrary, loadedFileAudioBuffers} = this.props
         var whichButton = e.target.id //substring of button id #
+
     
-        const player = this.browserAudioLibrary.createBufferSource();
-        player.buffer = this.loadedFileAudioBuffers[whichButton];
+        const player = browserAudioLibrary.createBufferSource(); //**** */
+        player.buffer = loadedFileAudioBuffers[whichButton]; //**** */
         player.loop = false;
-        player.connect(this.browserAudioLibrary.destination);
+        player.connect(browserAudioLibrary.destination); //**** */
         player.start(); // Play immediately.
         
     };
@@ -113,7 +118,7 @@ class Pad extends React.Component {
             <div className={pad.padClassList} 
             id={idx}
             onClick= {this.playSound} 
-            />
+            >{idx} </div>
             <div
               className={pad.assignClassList}
               id={idx}

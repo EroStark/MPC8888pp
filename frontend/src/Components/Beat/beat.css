@@ -2,7 +2,7 @@
 	border-style: solid;
 	border-radius: 10px;
     width: 60%;
-    margin: 0 auto;
+    margin: 5px auto;
 	padding: 10px;
 	overflow: auto;
 }
@@ -42,4 +42,13 @@
 
 .assignHighlighted {
 	background-color: orange;
+}
+
+/* tracks */
+
+.trackBoard {
+	width: 80%;
+	height: 300px;
+	background-color: gainsboro;
+	margin: 0 auto;
 }
