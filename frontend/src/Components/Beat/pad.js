@@ -52,46 +52,46 @@ class Pad extends React.Component {
     // this.storeInstrument(e.target.files[0])
 
     var reader = new FileReader();
+    reader.readAsArrayBuffer(e.target.files[0]);
     reader.onload = (e) => {
-    //   this.storeInstrument(reader.result)
+      
       this.initSound(reader.result);
     };
-    reader.readAsArrayBuffer(e.target.files[0]);
+    
   };
 
   initSound = soundBuffer => { 
     const { pads } = this.state
     const { browserAudioLibrary, loadedFileAudioBuffers , handleAudioBufferChanges} = this.props
    
-    const audioBuffers = [...loadedFileAudioBuffers] //****** 
+    const audioBuffers = [...loadedFileAudioBuffers] 
     const browserAudioApi = browserAudioLibrary
-
-    var assign = pads.filter((s) => s.assignClassList.includes("assignHighlighted"));
-    // console.log(
-    // "now we need to process uadio from loaded file",
-    // this.browserAudioLibrary
-    // );
-        browserAudioApi.decodeAudioData( //****** 
+    console.log('audio buffer before decode' , audioBuffers)
+    var assign = pads.filter((s) => s.assignClassList.includes("assignHighlighted")); //get single assign button
+    
+        browserAudioApi.decodeAudioData( // decode sound we gave initSound() then...
             soundBuffer,
             function(buffer) {
-                var whichButton = assign[0].id;
-                audioBuffers[whichButton] = buffer; 
+                var whichButton = assign[0].id; // get id of said button
+                audioBuffers[whichButton] = buffer;//   put sound in the array at that id
+                handleAudioBufferChanges(audioBuffers) 
+                 //   put sound in the array at that id
             },
             function(e) {
                 console.log("Error decoding file", e);
             }
         );
-
-        var highlightPad = pads.map((pad, sidx) => {
+          console.log('audioBuffer afer decode', audioBuffers)
+        var highlightPad = pads.map((pad, sidx) => { //highlights the pad that got assigned
             if (assign[0].id == pad.id)
               return { ...pad, padClassList: "pad padHighlighted" , assignClassList: "padAssign" };
             return { ...pad, assignClassList: "padAssign" };
           });
-
-          handleAudioBufferChanges(audioBuffers)
+          // handleAudioBufferChanges(audioBuffers) //set state with the new array
           this.setState({
               pads: highlightPad
           })
+
   };
 
   playSound = (e) => {

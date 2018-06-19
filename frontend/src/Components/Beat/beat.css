@@ -52,3 +52,20 @@
 	background-color: gainsboro;
 	margin: 0 auto;
 }
+
+.track {
+	border-style: solid;
+	border-radius: 10px;
+    width: 60%;
+    margin: 5px auto;
+	padding: 10px;
+	overflow: auto;
+	display: flex;
+	justify-content: space-between
+}
+
+.note{
+	width: 1px;
+	height: 2px;
+	border: 1px solid black;
+}

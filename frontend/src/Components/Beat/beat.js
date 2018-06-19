@@ -1,57 +1,64 @@
 import React from "react";
-import axios from "axios"
-import Pads from "./pad"
-import Sequencer from "./sequencer/sequencer"
-
-
+import axios from "axios";
+import Pads from "./pad";
+import Sequencer from "./sequencer/sequencer";
 
 class Beat extends React.Component {
+  constructor() {
+    super();
 
-    constructor() {
-        super();
+    this.browserAudioLibrary = new AudioContext();
 
-        this.browserAudioLibrary = new AudioContext();   
+    this.state = {
+      loadedFileAudioBuffers: [],
+      userFileAudioBufferLibrary: [],
+      allTracks: []
+    };
+    this.handleAudioBufferChanges = this.handleAudioBufferChanges.bind(this);
+  }
 
-        
+  handleAudioBufferChanges(arr) {
+    const newTracks = [...this.state.allTracks];
 
-        this.state = {
-            loadedFileAudioBuffers: [],
-            userFileAudioBufferLibrary: []
-        }
+    console.log("new Buffers", arr);
+    arr.forEach((pad, idx) => {
+      if (pad) {
+        return (newTracks[idx] = {
+          id: idx,
+          play: true,
+          pattern: "0000000000000000"
+        });
       }
+    });
 
-      handleAudioBufferChanges = (arr) => {
-          this.setState({
-              loadedFileAudioBuffers: arr
-          })
-      }
+    this.setState({
+      loadedFileAudioBuffers: arr,
+      allTracks: newTracks
+    });
+  }
 
+  render() {
+    const { loadedFileAudioBuffers, allTracks } = this.state;
+    // console.log("loaded", loadedFileAudioBuffers);
+    // console.log("all Tracks", allTracks);
 
-    render(){
-        var quickCss = {
-            border: '5px solid'
-          };
-          const {loadedFileAudioBuffers} = this.state
-        console.log('state' , loadedFileAudioBuffers)
-        
-        return (
-            <div>
-                MPC8888
-
-                <Sequencer loadedFileAudioBuffers = {loadedFileAudioBuffers} 
-                browserAudioLibrary= {this.browserAudioLibrary} />
-
-                <Pads loadedFileAudioBuffers = {this.state.loadedFileAudioBuffers} 
-                browserAudioLibrary= {this.browserAudioLibrary} 
-                handleAudioBufferChanges= {this.handleAudioBufferChanges} />
-
-                <div >
-                    
-                </div>
-            </div>
-        )
-    }
+    return (
+      <div>
+        MPC8888
+        <Sequencer
+          loadedFileAudioBuffers={loadedFileAudioBuffers}
+          browserAudioLibrary={this.browserAudioLibrary}
+          allTracks={allTracks}
+        />
+        <Pads
+          loadedFileAudioBuffers={this.state.loadedFileAudioBuffers}
+          browserAudioLibrary={this.browserAudioLibrary}
+          handleAudioBufferChanges={this.handleAudioBufferChanges}
+        />
+        <div />
+      </div>
+    );
+  }
 }
 
-
-export default Beat ;
+export default Beat;
