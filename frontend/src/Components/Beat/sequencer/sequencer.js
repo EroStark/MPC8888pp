@@ -7,16 +7,28 @@ class Sequencer extends React.Component{
         super();
 
     }
+
+
+
+    changeTracks = obj => {
+       const {allTracks , handleAllTracksChanges} = this.props
+        const changedAllTracks = [...allTracks]
+       changedAllTracks[obj.id] = obj
+
+       handleAllTracksChanges(changedAllTracks)
+    }
     
 
 
     render(){
         const {loadedFileAudioBuffers, allTracks} = this.props
+
+        console.log('allTracks', allTracks)
         return(
             <div className="pads">
                 {allTracks.map(track =>{ 
                      if(track){
-                         return (<SingleTrack track={track} /> )
+                         return (<SingleTrack track={track} changeTracks={this.changeTracks} /> )
                         }
                     
                  } ) }

@@ -37,6 +37,13 @@ class Beat extends React.Component {
     });
   }
 
+  handleAllTracksChanges = arr => {
+
+    this.setState({
+        allTracks: arr
+    })
+  }
+
   render() {
     const { loadedFileAudioBuffers, allTracks } = this.state;
     // console.log("loaded", loadedFileAudioBuffers);
@@ -49,6 +56,7 @@ class Beat extends React.Component {
           loadedFileAudioBuffers={loadedFileAudioBuffers}
           browserAudioLibrary={this.browserAudioLibrary}
           allTracks={allTracks}
+          handleAllTracksChanges={this.handleAllTracksChanges}
         />
         <Pads
           loadedFileAudioBuffers={this.state.loadedFileAudioBuffers}

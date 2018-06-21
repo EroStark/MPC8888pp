@@ -65,7 +65,14 @@
 }
 
 .note{
-	width: 1px;
-	height: 2px;
+	width: 5px;
+	height: 13px;
 	border: 1px solid black;
+}
+
+.mute {
+	width: 13px;
+	height: 13px;
+	border: 1px solid black;
+	border-radius: 10px;
 }
