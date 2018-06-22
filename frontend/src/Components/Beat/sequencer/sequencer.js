@@ -23,7 +23,6 @@ class Sequencer extends React.Component{
     render(){
         const {loadedFileAudioBuffers, allTracks} = this.props
 
-        console.log('allTracks', allTracks)
         return(
             <div className="pads">
                 {allTracks.map(track =>{ 

@@ -24,15 +24,21 @@ class SingleTrack extends React.Component{
         console.log('track after click',track)
     }
 
+    toggleMute = () => {
+        const {track, changeTracks} = this.props
+        track.play = !track.play
+        changeTracks(track)
+    }
+
     render(){
         const {track} = this.props
         let trackPattern = track.pattern.split('')
-        const {mute} = "mute"
-        console.log('track', track)
+        const mute = track.play === true ? "mute muteHighlighted" : "mute"
+        console.log('track', track, mute)
         
         return(
             <div className="track">
-                <div className = {mute} /> 
+                <div className={mute} onClick={this.toggleMute} /> 
                 {trackPattern.map((note,idx) => {
                     const highlight = note === "1" ? "note padHighlighted" : "note"
                     return <div className={highlight} id={idx} onClick={this.changeSequence}/>
